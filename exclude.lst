@@ -1,0 +1,5 @@
+.git/*
+.gitignore
+local_test/*
+*.zip
+exclude.lst
