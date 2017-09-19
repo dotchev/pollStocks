@@ -13,15 +13,20 @@ function filterStocks(options, data) {
     let sma200p = percent(stock.price, stock.sma200d);
     let hi52p = percent(stock.price, stock.hi52w);
 
-    if (options.max_sma50p && Math.abs(sma50p) >= options.max_sma50p) {
+    options.max_sma50p &&
+      isFinite(sma50p) &&
+      Math.abs(sma50p) >= options.max_sma50p &&
       alerts.add('sma50p');
-    }
-    if (options.min_sma200p && sma200p < options.min_sma200p) {
+
+    options.min_sma200p &&
+      isFinite(sma200p) &&
+      sma200p < options.min_sma200p &&
       alerts.add('sma200p');
-    }
-    if (options.min_hi52p && hi52p <= options.min_hi52p) {
+
+    options.min_hi52p &&
+      isFinite(hi52p) &&
+      hi52p <= options.min_hi52p &&
       alerts.add('hi52p');
-    }
 
     if (alerts.size > 0) {
       result.push({
