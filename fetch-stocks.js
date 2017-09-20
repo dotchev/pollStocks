@@ -7,29 +7,30 @@ module.exports = fetchStocks;
 function fetchStocks(symbols, cb) {
   const parse = require('csv-parse/lib/sync');
   const request = require('request');
-  const qs = require('querystring');
 
-  const url = 'http://download.finance.yahoo.com/d/quotes.csv?' +
-    qs.stringify({
-      s: symbols,
-      f: 'nsl1m3m4jk'
-    });
-  const columns = [
-    'name',
-    'symbol',
-    'price',
-    'sma50d',
-    'sma200d',
-    'lo52w',
-    'hi52w'
-  ];
-  debug('Fetching %s ...', url);
-  request(url, (err, res, body) => {
+  const fields = {
+    name: 'n',
+    symbol: 's',
+    price: 'l1',
+    sma50d: 'm3',
+    sma200d: 'm4',
+    lo52w: 'j',
+    hi52w: 'k'
+  };
+  const columns = Object.keys(fields);
+  const url = 'http://download.finance.yahoo.com/d/quotes.csv';
+  const qs = {
+    s: symbols,
+    f: columns.map(c => fields[c]).join('')
+  };
+  debug('Fetching %s query %o', url, qs);
+  request({ url, qs }, (err, res, body) => {
     if (err) return cb(err);
+    debug('Status: %s', res.statusCode);
+    debug('Body:\n%s', body);
     if (res.statusCode !== 200) {
       return cb(new Error(`${url} returned status ${res.statusCode}`));
     }
-    debug('Body:\n%s', body);
     let data = parse(body, { columns, auto_parse: true });
     debug('Data:\n%O', data);
     cb(null, data);
